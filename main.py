@@ -5,8 +5,6 @@
 
 from flask import Flask, request, jsonify
 from datetime import datetime
-from copy import deepcopy
-import json
 
 app = Flask(__name__)
 
@@ -24,6 +22,8 @@ PROFILE_DB = [
 ]
 
 TANK_DB = []
+
+max_id = 0
 
 # Returns all of the data in the database
 @app.route("/profile", methods=["GET"])
@@ -72,8 +72,14 @@ def get_data():
 # Returns whatever object it recieves in the body of the request
 @app.route("/data", methods=["POST"])
 def post_data():
+    global max_id
+
     id = len(TANK_DB) + 1
-    
+    if id > max_id:
+        max_id = id
+    elif (max_id > id):
+        id = max_id + 1
+
     r = request.json
     r["id"] = id
     TANK_DB.append(r)
