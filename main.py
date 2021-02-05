@@ -25,90 +25,87 @@ TANK_DB = []
 
 max_id = 0
 
+@app.route("/")
+def home():
+    return "ECSE3038 - Lab 2"
+
 # Returns all of the data in the database
-@app.route("/profile", methods=["GET"])
+@app.route("/profile", methods=["GET", "POST, PATCH"])
 def get_profile():
-    return jsonify(PROFILE_DB)
+    if request.method == "GET":
+        return jsonify(PROFILE_DB)
 
-# Returns whatever object it recieves in the body of the request
-@app.route("/profile", methods=["POST"])
-def post_profile():
-    # Get the current date and time
-    now = datetime.now()
-    dt = now.strftime("%d/%m/%Y %H:%M:%S")
+    elif request.method == "POST":
+        # Get the current date and time
+        now = datetime.now()
+        dt = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    r = request.json
-    r["last_updated"] = dt
-    PROFILE_DB[0]["data"] = r
+        r = request.json
+        r["last_updated"] = dt
+        PROFILE_DB[0]["data"] = r
 
-    return request.json
+        return request.json
 
-
-# Returns 
-@app.route('/profile', methods=["PATCH"])
-def patch_profile():
-    # Get the current date and time
-    now = datetime.now()
-    dt = now.strftime("%d/%m/%Y %H:%M:%S")
+    elif request.method == "PATCH":
+        # Get the current date and time
+        now = datetime.now()
+        dt = now.strftime("%d/%m/%Y %H:%M:%S")
     
-    data = PROFILE_DB[0]["data"]
+        data = PROFILE_DB[0]["data"]
 
-    r = request.json
-    r["last_updated"] = dt
-    attributes = r.keys()
-    for attribute in attributes:
-        data[attribute] = r[attribute]
+        r = request.json
+        r["last_updated"] = dt
+        attributes = r.keys()
+        for attribute in attributes:
+            data[attribute] = r[attribute]
 
-    return request.json
+        return request.json    
 
 
 ###############################################################################
 
 # Returns all of the data in TANK_DB
-@app.route("/data", methods=["GET"])
-def get_data():
-    return jsonify(TANK_DB)
+@app.route("/data", methods=["GET", "POST"])
+def tank_data():
+    if request.method == "GET":
+        return jsonify(TANK_DB)  
 
-# Returns whatever object it recieves in the body of the request
-@app.route("/data", methods=["POST"])
-def post_data():
-    global max_id
+    elif request.method == "POST":
+        global max_id
 
-    id = len(TANK_DB) + 1
-    if id > max_id:
-        max_id = id
-    elif (max_id > id):
-        id = max_id + 1
+        id = len(TANK_DB) + 1
+        if id > max_id:
+            max_id = id
+        elif (max_id > id):
+            id = max_id + 1
 
-    r = request.json
-    r["id"] = id
-    TANK_DB.append(r)
-    return request.json
+        r = request.json
+        r["id"] = id
+        TANK_DB.append(r)
+        return request.json
+   
+ 
+@app.route('/data/<int:id>', methods=["PATCH", "DELETE"])
+def tank_id_methods(id):
+    if request.method == "PATCH":
+        for i in TANK_DB:
+            if i["id"] == id:
+                r = request.json
+                attributes = r.keys()
 
-# Returns 
-@app.route('/data/<int:id>', methods=["PATCH"])
-def patch_data(id):
-    for i in TANK_DB:
-        if i["id"] == id:
-            r = request.json
-            attributes = r.keys()
+                for attribute in attributes:
+                    i[attribute] = r[attribute]
 
-            for attribute in attributes:
-                i[attribute] = r[attribute]
+        return request.json
+    
+    elif request.method == "DELETE":
+        for i in TANK_DB:
+            if i["id"] == id:
+                TANK_DB.remove(i)
 
-    return request.json
-
-# Returns 
-@app.route("/data/<int:id>", methods=["DELETE"])
-def delete_data(id):
-    for i in TANK_DB:
-        if i["id"] == id:
-            TANK_DB.remove(i)
-
-    return {
-        "success": True
-        }
-
+        return {
+            "success": True
+            }
 
 if __name__ == "__main__":
     app.run(
