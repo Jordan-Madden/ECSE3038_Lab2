@@ -44,7 +44,7 @@ def get_profile():
         r["last_updated"] = dt
         PROFILE_DB[0]["data"] = r
 
-        return request.json
+        return jsonify(PROFILE_DB)
 
     elif request.method == "PATCH":
         # Get the current date and time
@@ -59,7 +59,7 @@ def get_profile():
         for attribute in attributes:
             data[attribute] = r[attribute]
 
-        return request.json    
+        return jsonify(PROFILE_DB)    
 
 
 ###############################################################################
@@ -82,7 +82,7 @@ def tank_data():
         r = request.json
         r["id"] = id
         TANK_DB.append(r)
-        return request.json
+        return jsonify(TANK_DB)
    
  
 @app.route('/data/<int:id>', methods=["PATCH", "DELETE"])
@@ -96,16 +96,14 @@ def tank_id_methods(id):
                 for attribute in attributes:
                     i[attribute] = r[attribute]
 
-        return request.json
+        return jsonify(TANK_DB)
     
     elif request.method == "DELETE":
         for i in TANK_DB:
             if i["id"] == id:
                 TANK_DB.remove(i)
 
-        return {
-            "success": True
-            }
+        return jsonify(TANK_DB)
 
 if __name__ == "__main__":
     app.run(
