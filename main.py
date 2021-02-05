@@ -73,14 +73,10 @@ def tank_data():
     elif request.method == "POST":
         global max_id
 
-        id = len(TANK_DB) + 1
-        if id > max_id:
-            max_id = id
-        elif (max_id > id):
-            id = max_id + 1
+        max_id += 1
 
         r = request.json
-        r["id"] = id
+        r["id"] = max_id
         TANK_DB.append(r)
         return jsonify(TANK_DB)
    
@@ -107,5 +103,6 @@ def tank_id_methods(id):
 
 if __name__ == "__main__":
     app.run(
-        debug=True
+        debug=True,
+        port = 3000
     )
