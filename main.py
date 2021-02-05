@@ -4,13 +4,14 @@
 '''
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from datetime import datetime
 
 app = Flask(__name__)
+CORS(app)
 
 # Super fancy database
-PROFILE_DB = [
-    {
+PROFILE_DB = {
         "success": True,
         "data": {
             "last_updated": "2/3/2021, 8:48:51 PM",
@@ -19,10 +20,8 @@ PROFILE_DB = [
             "color": "blue"
         }
     }
-]
 
 TANK_DB = []
-
 max_id = 0
 
 @app.route("/")
@@ -40,9 +39,10 @@ def get_profile():
         now = datetime.now()
         dt = now.strftime("%d/%m/%Y %H:%M:%S")
 
-        r = request.json
-        r["last_updated"] = dt
-        PROFILE_DB[0]["data"] = r
+        PROFILE_DB["data"]["last_updated"] = (dt)
+        PROFILE_DB["data"]["username"] = (request.json["username"])
+        PROFILE_DB["data"]["role"] = (request.json["role"])
+        PROFILE_DB["data"]["color"] = (request.json["color"])
 
         return jsonify(PROFILE_DB)
 
@@ -51,7 +51,7 @@ def get_profile():
         now = datetime.now()
         dt = now.strftime("%d/%m/%Y %H:%M:%S")
     
-        data = PROFILE_DB[0]["data"]
+        data = PROFILE_DB["data"]
 
         r = request.json
         r["last_updated"] = dt
