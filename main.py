@@ -30,7 +30,7 @@ def home():
     return "ECSE3038 - Lab 2"
 
 # Returns all of the data in the database
-@app.route("/profile", methods=["GET", "POST, PATCH"])
+@app.route("/profile", methods=["GET", "POST", "PATCH"])
 def get_profile():
     if request.method == "GET":
         return jsonify(PROFILE_DB)
